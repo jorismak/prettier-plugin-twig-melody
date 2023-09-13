@@ -1,39 +1,39 @@
 {
-    "name": "prettier-plugin-twig-melody",
-    "version": "0.4.6",
-    "description": "Prettier Plugin for Twig/Melody",
-    "main": "src",
-    "repository": "https://github.com/trivago/prettier-plugin-twig-melody",
-    "author": "Tom Bartel <thomas.bartel@trivago.com>",
-    "contributors": [
-        "Joris Mak <joris.mak+melodyfork@gmail.com>"
-    ],
-    "license": "Apache 2.0",
-    "files": [
-        "src"
-    ],
-    "scripts": {
-        "lint": "jest -c jest.eslint.config.js",
-        "test": "jest",
-        "prettier": "prettier --plugin=. --parser=melody",
-        "publish": "npm publish"
-    },
-    "dependencies": {
-        "babel-types": "^6.26.0",
-        "melody-extension-core": "^1.7.5",
-        "melody-parser": "^1.7.5",
-        "melody-traverse": "^1.7.5",
-        "melody-types": "^1.7.5",
-        "prettier": "^1.8.2",
-        "resolve": "^1.12.0"
-    },
-    "devDependencies": {
-        "jest": "^21.1.0",
-        "jest-runner-eslint": "^0.3.0"
-    },
-    "jest": {
-        "projects": [
-            "<rootDir>/jest.*.config.js"
-        ]
-    }
+  "name": "prettier-plugin-twig-melody",
+  "version": "0.4.6",
+  "description": "Prettier Plugin for Twig/Melody",
+  "main": "src",
+  "repository": "https://github.com/trivago/prettier-plugin-twig-melody",
+  "author": "Tom Bartel <thomas.bartel@trivago.com>",
+  "contributors": [
+    "Joris Mak <joris.mak+melodyfork@gmail.com>"
+  ],
+  "license": "Apache 2.0",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "bun -b x prettier -c .",
+    "prettier": "bun -b x prettier --write .",
+    "test": "jest",
+    "prettier-test": "prettier --plugin=. --parser=melody",
+    "publish": "npm publish"
+  },
+  "dependencies": {
+    "babel-types": "^6.26.0",
+    "melody-extension-core": "^1.7.5",
+    "melody-parser": "^1.7.5",
+    "melody-traverse": "^1.7.5",
+    "melody-types": "^1.7.5",
+    "prettier": "^3.0.3"
+  },
+  "devDependencies": {
+    "jest": "^21.1.0",
+    "jest-runner-eslint": "^0.3.0"
+  },
+  "jest": {
+    "projects": [
+      "<rootDir>/jest.*.config.js"
+    ]
+  }
 }
