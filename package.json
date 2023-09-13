@@ -9,9 +9,6 @@
     "files": [
         "src"
     ],
-    "engines": {
-        "node": ">=6"
-    },
     "scripts": {
         "lint": "jest -c jest.eslint.config.js",
         "test": "jest",
