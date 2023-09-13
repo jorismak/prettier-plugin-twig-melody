@@ -36,7 +36,10 @@ const getProjectRoot = () => {
 const tryLoadPlugin = pluginPath => {
     try {
         const projectRoot = getProjectRoot();
-        const requirePath = require.resolve(path.resolve(projectRoot, pluginPath));
+        const requirePath = require.resolve(
+            path.resolve(projectRoot, pluginPath)
+        );
+
         return eval("require")(requirePath);
     } catch (e) {
         console.error("Could not load plugin path " + pluginPath);
