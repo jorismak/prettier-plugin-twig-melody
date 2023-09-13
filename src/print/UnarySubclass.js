@@ -6,19 +6,15 @@ const {
     findParentNode,
     isMultipartExpression,
     IS_ROOT_LOGICAL_EXPRESSION,
-    GROUP_TOP_LEVEL_LOGICAL
+    GROUP_TOP_LEVEL_LOGICAL,
 } = require("../util");
 
-const argumentNeedsParentheses = node => isMultipartExpression(node);
+const argumentNeedsParentheses = (node) => isMultipartExpression(node);
 
-const isLogicalOperator = operator => operator === "not";
+const isLogicalOperator = (operator) => operator === "not";
 
 const printLogicalExpression = (node, path, print) => {
-    const foundRootAbove = firstValueInAncestorChain(
-        path,
-        IS_ROOT_LOGICAL_EXPRESSION,
-        false
-    );
+    const foundRootAbove = firstValueInAncestorChain(path, IS_ROOT_LOGICAL_EXPRESSION, false);
     if (!foundRootAbove) {
         node[IS_ROOT_LOGICAL_EXPRESSION] = true;
     }
@@ -29,11 +25,7 @@ const printLogicalExpression = (node, path, print) => {
     const needsParentheses = argumentNeedsParentheses(node.argument);
     const printedArgument = path.call(print, "argument");
     if (needsParentheses) {
-        parts.push(
-            "(",
-            indent(concat([softline, printedArgument])),
-            concat([softline, ")"])
-        );
+        parts.push("(", indent(concat([softline, printedArgument])), concat([softline, ")"]));
     } else {
         parts.push(printedArgument);
     }
@@ -59,5 +51,5 @@ const p = (node, path, print) => {
 };
 
 module.exports = {
-    printUnarySubclass: p
+    printUnarySubclass: p,
 };

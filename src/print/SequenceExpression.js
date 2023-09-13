@@ -1,11 +1,6 @@
 const prettier = require("prettier");
 const { concat, hardline } = prettier.doc.builders;
-const {
-    removeSurroundingWhitespace,
-    printChildGroups,
-    isRootNode,
-    STRING_NEEDS_QUOTES
-} = require("../util");
+const { removeSurroundingWhitespace, printChildGroups, isRootNode, STRING_NEEDS_QUOTES } = require("../util");
 
 const p = (node, path, print) => {
     node[STRING_NEEDS_QUOTES] = false;
@@ -18,5 +13,5 @@ const p = (node, path, print) => {
 };
 
 module.exports = {
-    printSequenceExpression: p
+    printSequenceExpression: p,
 };

@@ -1,19 +1,11 @@
 const prettier = require("prettier");
-const {
-    concat,
-    group,
-    line,
-    hardline,
-    softline,
-    indent,
-    join
-} = prettier.doc.builders;
+const { concat, group, line, hardline, softline, indent, join } = prettier.doc.builders;
 const {
     removeSurroundingWhitespace,
     isInlineElement,
     printChildGroups,
     EXPRESSION_NEEDED,
-    STRING_NEEDS_QUOTES
+    STRING_NEEDS_QUOTES,
 } = require("../util");
 
 const printOpeningTag = (node, path, print) => {
@@ -23,11 +15,7 @@ const printOpeningTag = (node, path, print) => {
     const hasAttributes = node.attributes && node.attributes.length > 0;
 
     if (hasAttributes) {
-        return concat([
-            opener,
-            indent(concat([" ", printedAttributes])),
-            openingTagEnd
-        ]);
+        return concat([opener, indent(concat([" ", printedAttributes])), openingTagEnd]);
     }
     return concat([opener, openingTagEnd]);
 };
@@ -72,5 +60,5 @@ const p = (node, path, print) => {
 };
 
 module.exports = {
-    printElement: p
+    printElement: p,
 };

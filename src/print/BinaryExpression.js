@@ -9,7 +9,7 @@ const {
     IS_ROOT_LOGICAL_EXPRESSION,
     firstValueInAncestorChain,
     findParentNode,
-    wrapExpressionIfNeeded
+    wrapExpressionIfNeeded,
 } = require("../util");
 const { extension: coreExtension } = require("melody-extension-core");
 const ALREADY_INDENTED = Symbol("ALREADY_INDENTED");
@@ -38,11 +38,11 @@ const printInterpolatedString = (node, path, print, options) => {
     return concat(printedFragments);
 };
 
-const operatorNeedsSpaces = operator => {
+const operatorNeedsSpaces = (operator) => {
     return NO_WHITESPACE_AROUND.indexOf(operator) < 0;
 };
 
-const hasLogicalOperator = node => {
+const hasLogicalOperator = (node) => {
     return node.operator === "or" || node.operator === "and";
 };
 
@@ -50,17 +50,12 @@ const otherNeedsParentheses = (node, otherProp) => {
     const other = node[otherProp];
     const isBinaryOther = Node.isBinaryExpression(other);
     const ownPrecedence = operatorPrecedence[node.operator];
-    const otherPrecedence = isBinaryOther
-        ? operatorPrecedence[node[otherProp].operator]
-        : Number.MAX_SAFE_INTEGER;
+    const otherPrecedence = isBinaryOther ? operatorPrecedence[node[otherProp].operator] : Number.MAX_SAFE_INTEGER;
     return (
         otherPrecedence < ownPrecedence ||
-        (otherPrecedence > ownPrecedence &&
-            isBinaryOther &&
-            hasLogicalOperator(other)) ||
+        (otherPrecedence > ownPrecedence && isBinaryOther && hasLogicalOperator(other)) ||
         Node.isFilterExpression(other) ||
-        (Node.isBinaryConcatExpression(node) &&
-            Node.isConditionalExpression(other))
+        (Node.isBinaryConcatExpression(node) && Node.isConditionalExpression(other))
     );
 };
 
@@ -72,19 +67,11 @@ const printBinaryExpression = (node, path, print) => {
     const isLogicalOperator = ["and", "or"].indexOf(node.operator) > -1;
     const whitespaceAroundOperator = operatorNeedsSpaces(node.operator);
 
-    const alreadyIndented = firstValueInAncestorChain(
-        path,
-        ALREADY_INDENTED,
-        false
-    );
+    const alreadyIndented = firstValueInAncestorChain(path, ALREADY_INDENTED, false);
     if (!alreadyIndented && isBinaryRight) {
         node.right[ALREADY_INDENTED] = true;
     }
-    const foundRootAbove = firstValueInAncestorChain(
-        path,
-        IS_ROOT_LOGICAL_EXPRESSION,
-        false
-    );
+    const foundRootAbove = firstValueInAncestorChain(path, IS_ROOT_LOGICAL_EXPRESSION, false);
 
     const parentNode = findParentNode(path);
     const shouldGroupOnTopLevel = parentNode[GROUP_TOP_LEVEL_LOGICAL] !== false;
@@ -92,9 +79,7 @@ const printBinaryExpression = (node, path, print) => {
     if (!foundRootAbove) {
         node[IS_ROOT_LOGICAL_EXPRESSION] = true;
     }
-    const parentOperator = foundRootAbove
-        ? firstValueInAncestorChain(path, "operator")
-        : "";
+    const parentOperator = foundRootAbove ? firstValueInAncestorChain(path, "operator") : "";
 
     node[OPERATOR_PRECEDENCE] = operatorPrecedence[node.operator];
 
@@ -115,7 +100,7 @@ const printBinaryExpression = (node, path, print) => {
     const potentiallyIndented = [
         whitespaceAroundOperator ? line : softline,
         node.operator,
-        whitespaceAroundOperator ? " " : ""
+        whitespaceAroundOperator ? " " : "",
     ];
     if (rightNeedsParens) {
         potentiallyIndented.push("(");
@@ -124,21 +109,14 @@ const printBinaryExpression = (node, path, print) => {
     if (rightNeedsParens) {
         potentiallyIndented.push(")");
     }
-    const rightHandSide = alreadyIndented
-        ? concat(potentiallyIndented)
-        : indent(concat(potentiallyIndented));
-    const result = concat(
-        wrapExpressionIfNeeded(path, [...parts, rightHandSide], node)
-    );
+    const rightHandSide = alreadyIndented ? concat(potentiallyIndented) : indent(concat(potentiallyIndented));
+    const result = concat(wrapExpressionIfNeeded(path, [...parts, rightHandSide], node));
 
     const shouldCreateTopLevelGroup = !foundRootAbove && shouldGroupOnTopLevel;
-    const isDifferentLogicalOperator =
-        isLogicalOperator && node.operator !== parentOperator;
+    const isDifferentLogicalOperator = isLogicalOperator && node.operator !== parentOperator;
 
     const shouldGroupResult =
-        shouldCreateTopLevelGroup ||
-        !isLogicalOperator ||
-        (foundRootAbove && isDifferentLogicalOperator);
+        shouldCreateTopLevelGroup || !isLogicalOperator || (foundRootAbove && isDifferentLogicalOperator);
 
     return shouldGroupResult ? group(result) : result;
 };
@@ -151,5 +129,5 @@ const p = (node, path, print, options) => {
 };
 
 module.exports = {
-    printBinaryExpression: p
+    printBinaryExpression: p,
 };

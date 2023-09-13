@@ -1,9 +1,6 @@
 const { CharStream, Lexer, TokenStream, Parser } = require("melody-parser");
 const { extension: coreExtension } = require("melody-extension-core");
-const {
-    getAdditionalMelodyExtensions,
-    getPluginPathsFromOptions
-} = require("./util");
+const { getAdditionalMelodyExtensions, getPluginPathsFromOptions } = require("./util");
 
 const ORIGINAL_SOURCE = Symbol("ORIGINAL_SOURCE");
 
@@ -11,10 +8,10 @@ const createConfiguredLexer = (code, ...extensions) => {
     const lexer = new Lexer(new CharStream(code));
     for (const extension of extensions) {
         if (extension.unaryOperators) {
-            lexer.addOperators(...extension.unaryOperators.map(op => op.text));
+            lexer.addOperators(...extension.unaryOperators.map((op) => op.text));
         }
         if (extension.binaryOperators) {
-            lexer.addOperators(...extension.binaryOperators.map(op => op.text));
+            lexer.addOperators(...extension.binaryOperators.map((op) => op.text));
         }
     }
     return lexer;
@@ -51,7 +48,7 @@ const createConfiguredParser = (code, multiTagConfig, ...extensions) => {
             ignoreWhitespace: true,
             ignoreComments: false,
             ignoreHtmlComments: false,
-            applyWhitespaceTrimming: false
+            applyWhitespaceTrimming: false,
         }),
         {
             ignoreComments: false,
@@ -59,7 +56,7 @@ const createConfiguredParser = (code, multiTagConfig, ...extensions) => {
             ignoreDeclarations: false,
             decodeEntities: false,
             multiTags: multiTagConfig,
-            allowUnknownTags: true
+            allowUnknownTags: true,
         }
     );
     applyParserExtensions(parser, ...extensions);
@@ -69,17 +66,14 @@ const createConfiguredParser = (code, multiTagConfig, ...extensions) => {
 const getMultiTagConfig = (tagsCsvs = []) =>
     tagsCsvs.reduce((acc, curr) => {
         const tagNames = curr.split(",");
-        acc[tagNames[0].trim()] = tagNames.slice(1).map(s => s.trim());
+        acc[tagNames[0].trim()] = tagNames.slice(1).map((s) => s.trim());
         return acc;
     }, {});
 
 const parse = (text, parsers, options) => {
     const pluginPaths = getPluginPathsFromOptions(options);
     const multiTagConfig = getMultiTagConfig(options.twigMultiTags || []);
-    const extensions = [
-        coreExtension,
-        ...getAdditionalMelodyExtensions(pluginPaths)
-    ];
+    const extensions = [coreExtension, ...getAdditionalMelodyExtensions(pluginPaths)];
     const parser = createConfiguredParser(text, multiTagConfig, ...extensions);
     const ast = parser.parse();
     ast[ORIGINAL_SOURCE] = text;
@@ -88,5 +82,5 @@ const parse = (text, parsers, options) => {
 
 module.exports = {
     parse,
-    ORIGINAL_SOURCE
+    ORIGINAL_SOURCE,
 };

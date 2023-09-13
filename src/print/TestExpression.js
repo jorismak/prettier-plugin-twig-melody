@@ -10,46 +10,33 @@ const textMap = {
     TestEvenExpression: "even",
     TestOddExpression: "odd",
     TestIterableExpression: "iterable",
-    TestSameAsExpression: "same as"
+    TestSameAsExpression: "same as",
 };
 
-const isNegator = node =>
-    node.constructor.name === "UnarySubclass" && node.operator === "not";
+const isNegator = (node) => node.constructor.name === "UnarySubclass" && node.operator === "not";
 
 const p = (node, path, print) => {
     const expressionType = node.__proto__.type;
     const parts = [path.call(print, "expression"), " is "];
     const parent = findParentNode(path);
-    const hasArguments =
-        Array.isArray(node.arguments) && node.arguments.length > 0;
+    const hasArguments = Array.isArray(node.arguments) && node.arguments.length > 0;
     if (isNegator(parent)) {
         parts.push("not ");
     }
     if (!textMap[expressionType]) {
-        console.error(
-            "TestExpression: No text for " + expressionType + " defined"
-        );
+        console.error("TestExpression: No text for " + expressionType + " defined");
     } else {
         parts.push(textMap[expressionType]);
     }
     if (hasArguments) {
         const printedArguments = path.map(print, "arguments");
         const joinedArguments = join(concat([",", line]), printedArguments);
-        parts.push(
-            group(
-                concat([
-                    "(",
-                    indent(concat([softline, joinedArguments])),
-                    softline,
-                    ")"
-                ])
-            )
-        );
+        parts.push(group(concat(["(", indent(concat([softline, joinedArguments])), softline, ")"])));
     }
 
     return concat(parts);
 };
 
 module.exports = {
-    printTestExpression: p
+    printTestExpression: p,
 };

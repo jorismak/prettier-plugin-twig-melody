@@ -9,10 +9,7 @@ const p = (node, path, print, options) => {
     node[EXPRESSION_NEEDED] = false;
     const mappedElements = path.map(print, "properties");
     const separator = options.twigAlwaysBreakObjects ? hardline : line;
-    const indentedContent = concat([
-        line,
-        join(concat([",", separator]), mappedElements)
-    ]);
+    const indentedContent = concat([line, join(concat([",", separator]), mappedElements)]);
 
     const parts = ["{", indent(indentedContent), separator, "}"];
     wrapExpressionIfNeeded(path, parts, node);
@@ -21,5 +18,5 @@ const p = (node, path, print, options) => {
 };
 
 module.exports = {
-    printObjectExpression: p
+    printObjectExpression: p,
 };

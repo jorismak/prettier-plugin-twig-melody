@@ -1,11 +1,6 @@
 const prettier = require("prettier");
 const { concat, join, indent, hardline } = prettier.doc.builders;
-const {
-    createTextGroups,
-    stripHtmlCommentChars,
-    normalizeHtmlComment,
-    countNewlines
-} = require("../util");
+const { createTextGroups, stripHtmlCommentChars, normalizeHtmlComment, countNewlines } = require("../util");
 
 const p = (node, path, print) => {
     const commentText = stripHtmlCommentChars(node.value.value || "");
@@ -19,5 +14,5 @@ const p = (node, path, print) => {
 };
 
 module.exports = {
-    printHtmlComment: p
+    printHtmlComment: p,
 };

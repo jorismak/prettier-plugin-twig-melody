@@ -2,7 +2,7 @@ const prettier = require("prettier");
 const { group, concat, indent, line, hardline } = prettier.doc.builders;
 const { EXPRESSION_NEEDED, STRING_NEEDS_QUOTES } = require("../util");
 
-const formatDelay = delay => {
+const formatDelay = (delay) => {
     return "" + delay / 1000 + "s";
 };
 
@@ -33,18 +33,9 @@ const buildOpener = (node, path, print) => {
         result.push(indent(concat([" with ", path.call(print, "argument")])));
     }
     if (node.delayBy) {
-        result.push(
-            indent(
-                concat([
-                    line,
-                    "delay placeholder by ",
-                    formatDelay(node.delayBy)
-                ])
-            )
-        );
+        result.push(indent(concat([line, "delay placeholder by ", formatDelay(node.delayBy)])));
     }
-    const trimRightMount =
-        node.body || node.otherwise ? node.trimRightMount : node.trimRight;
+    const trimRightMount = node.body || node.otherwise ? node.trimRightMount : node.trimRight;
     result.push(concat([line, trimRightMount ? "-%}" : "%}"]));
     return group(concat(result));
 };
@@ -55,9 +46,7 @@ const buildBody = (path, print) => {
 
 const buildErrorHandling = (node, path, print) => {
     const parts = [];
-    parts.push(
-        concat([hardline, node.trimLeftCatch ? "{%-" : "{%", " catch "])
-    );
+    parts.push(concat([hardline, node.trimLeftCatch ? "{%-" : "{%", " catch "]));
     if (node.errorVariableName) {
         parts.push(path.call(print, "errorVariableName"), " ");
     }
@@ -78,12 +67,7 @@ const p = (node, path, print) => {
     }
     if (node.body || node.otherwise) {
         parts.push(
-            concat([
-                hardline,
-                node.trimLeftEndmount ? "{%-" : "{%",
-                " endmount ",
-                node.trimRight ? "-%}" : "%}"
-            ])
+            concat([hardline, node.trimLeftEndmount ? "{%-" : "{%", " endmount ", node.trimRight ? "-%}" : "%}"])
         );
     }
 
@@ -91,5 +75,5 @@ const p = (node, path, print) => {
 };
 
 module.exports = {
-    printMountStatement: p
+    printMountStatement: p,
 };

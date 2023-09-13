@@ -3,11 +3,7 @@ const prettier = require("prettier");
 const { line, indent, concat, fill, group, hardline } = prettier.doc.builders;
 const { Node } = require("melody-types");
 
-const {
-    PRESERVE_LEADING_WHITESPACE,
-    PRESERVE_TRAILING_WHITESPACE,
-    NEWLINES_ONLY
-} = require("./publicSymbols.js");
+const { PRESERVE_LEADING_WHITESPACE, PRESERVE_TRAILING_WHITESPACE, NEWLINES_ONLY } = require("./publicSymbols.js");
 
 const INLINE_HTML_ELEMENTS = [
     "a",
@@ -39,7 +35,7 @@ const INLINE_HTML_ELEMENTS = [
     "span",
     "time",
     "tt",
-    "var"
+    "var",
 ];
 
 /**
@@ -58,18 +54,13 @@ const INLINE_HTML_ELEMENTS = [
  *     }
  * }}
  */
-const CONTRACTABLE_NODE_TYPES = [
-    "ObjectExpression",
-    "BinaryExpression",
-    "ConditionalExpression",
-    "ArrayExpression"
-];
+const CONTRACTABLE_NODE_TYPES = ["ObjectExpression", "BinaryExpression", "ConditionalExpression", "ArrayExpression"];
 
-const registerContractableNodeType = nodeType => {
+const registerContractableNodeType = (nodeType) => {
     CONTRACTABLE_NODE_TYPES.push(nodeType);
 };
 
-const isContractableNodeType = node => {
+const isContractableNodeType = (node) => {
     for (let i = 0; i < CONTRACTABLE_NODE_TYPES.length; i++) {
         const contractableNodeType = CONTRACTABLE_NODE_TYPES[i];
         const methodName = "is" + contractableNodeType;
@@ -83,15 +74,10 @@ const isContractableNodeType = node => {
     return false;
 };
 
-const isNotExpression = node =>
-    Node.isUnaryLike(node) && node.operator === "not";
+const isNotExpression = (node) => Node.isUnaryLike(node) && node.operator === "not";
 
-const isMultipartExpression = node => {
-    return (
-        Node.isBinaryExpression(node) ||
-        Node.isConditionalExpression(node) ||
-        Node.isUnaryLike(node)
-    );
+const isMultipartExpression = (node) => {
+    return Node.isBinaryExpression(node) || Node.isConditionalExpression(node) || Node.isUnaryLike(node);
 };
 
 /**
@@ -125,10 +111,7 @@ const firstValueInAncestorChain = (path, property, defaultValue) => {
     let currentIndex = path.stack.length - 2; // Don't start with self
     while (currentIndex >= 0) {
         const currentElement = path.stack[currentIndex];
-        if (
-            isMelodyNode(currentElement) &&
-            currentElement[property] !== undefined
-        ) {
+        if (isMelodyNode(currentElement) && currentElement[property] !== undefined) {
             return currentElement[property];
         }
         currentIndex--;
@@ -136,26 +119,22 @@ const firstValueInAncestorChain = (path, property, defaultValue) => {
     return defaultValue;
 };
 
-const quoteChar = options => {
+const quoteChar = (options) => {
     // Might change depending on configuration options
     return options && options.twigSingleQuote ? "'" : '"';
 };
 
-const isValidIdentifierName = s => {
+const isValidIdentifierName = (s) => {
     const identifierRegex = /^[A-Z][0-9A-Z_$]*$/i;
     return typeof s === "string" && identifierRegex.test(s);
 };
 
-const isMelodyNode = n => {
+const isMelodyNode = (n) => {
     const proto = n.__proto__;
-    return (
-        typeof n === "object" &&
-        proto.type &&
-        typeof Node["is" + proto.type] === "function"
-    );
+    return typeof n === "object" && proto.type && typeof Node["is" + proto.type] === "function";
 };
 
-const findParentNode = path => {
+const findParentNode = (path) => {
     let currentIndex = path.stack.length - 2;
     while (currentIndex >= 0) {
         const currentElement = path.stack[currentIndex];
@@ -167,7 +146,7 @@ const findParentNode = path => {
     return null;
 };
 
-const isRootNode = path => {
+const isRootNode = (path) => {
     return findParentNode(path) === null;
 };
 
@@ -203,9 +182,9 @@ const someParentNode = (path, predicate) => {
  *
  * @param {FastPath} path The representation of the current AST traversal state
  */
-const shouldExpressionsBeWrapped = path => {
+const shouldExpressionsBeWrapped = (path) => {
     let result = false;
-    walkParents(path, node => {
+    walkParents(path, (node) => {
         if (node[INSIDE_OF_STRING] === true) {
             result = INSIDE_OF_STRING;
             return false;
@@ -214,10 +193,7 @@ const shouldExpressionsBeWrapped = path => {
             result = EXPRESSION_NEEDED;
             return false;
         }
-        if (
-            node[EXPRESSION_NEEDED] === false ||
-            node[INSIDE_OF_STRING] === false
-        ) {
+        if (node[EXPRESSION_NEEDED] === false || node[INSIDE_OF_STRING] === false) {
             // Abort walking up the ancestor chain
             return false;
         }
@@ -254,33 +230,33 @@ const wrapInEnvironment = (parts, trimLeft = false, trimRight = false) => {
  * @param {array} parts The finished, printed element,
  *                  except for concatenation and grouping
  */
-const wrapInStringInterpolation = parts => {
+const wrapInStringInterpolation = (parts) => {
     parts.unshift("#{");
     parts.push("}");
 };
 
-const isWhitespaceOnly = s => typeof s === "string" && s.trim() === "";
+const isWhitespaceOnly = (s) => typeof s === "string" && s.trim() === "";
 
-const countNewlines = s => {
+const countNewlines = (s) => {
     return (s.match(/\n/g) || "").length;
 };
 
-const hasNoNewlines = s => {
+const hasNoNewlines = (s) => {
     return countNewlines(s) === 0;
 };
 
-const hasAtLeastTwoNewlines = s => countNewlines(s) >= 2;
+const hasAtLeastTwoNewlines = (s) => countNewlines(s) >= 2;
 
 // Split string by whitespace, but preserving the whitespace
 // "\n   Next\n" => ["", "\n   ", "Next", "\n", ""]
-const splitByWhitespace = s => s.split(/([\s\n]+)/gm);
+const splitByWhitespace = (s) => s.split(/([\s\n]+)/gm);
 
 const unifyWhitespace = (s, replacement = " ") =>
     splitByWhitespace(s)
-        .filter(s => !isWhitespaceOnly(s))
+        .filter((s) => !isWhitespaceOnly(s))
         .join(replacement);
 
-const normalizeWhitespace = whitespace => {
+const normalizeWhitespace = (whitespace) => {
     const numNewlines = countNewlines(whitespace);
     if (numNewlines > 0) {
         // Normalize to one/two newline(s)
@@ -290,11 +266,7 @@ const normalizeWhitespace = whitespace => {
     return [line];
 };
 
-const createTextGroups = (
-    s,
-    preserveLeadingWhitespace,
-    preserveTrailingWhitespace
-) => {
+const createTextGroups = (s, preserveLeadingWhitespace, preserveTrailingWhitespace) => {
     const parts = splitByWhitespace(s);
     const groups = [];
     let currentGroup = [];
@@ -302,16 +274,10 @@ const createTextGroups = (
     parts.forEach((curr, index) => {
         if (curr !== "") {
             if (isWhitespaceOnly(curr)) {
-                const isFirst =
-                    groups.length === 0 && currentGroup.length === 0;
-                const isLast =
-                    index === len - 1 ||
-                    (index === len - 2 && parts[len - 1] === "");
+                const isFirst = groups.length === 0 && currentGroup.length === 0;
+                const isLast = index === len - 1 || (index === len - 2 && parts[len - 1] === "");
                 // Remove leading whitespace if allowed
-                if (
-                    (isFirst && preserveLeadingWhitespace) ||
-                    (isLast && preserveTrailingWhitespace)
-                ) {
+                if ((isFirst && preserveLeadingWhitespace) || (isLast && preserveTrailingWhitespace)) {
                     currentGroup.push(...normalizeWhitespace(curr));
                 } else if (!isFirst && !isLast) {
                     const numNewlines = countNewlines(curr);
@@ -331,21 +297,19 @@ const createTextGroups = (
     if (currentGroup.length > 0) {
         groups.push(currentGroup);
     }
-    return groups.map(elem => fill(elem));
+    return groups.map((elem) => fill(elem));
 };
 
-const isWhitespaceNode = node => {
+const isWhitespaceNode = (node) => {
     return (
-        (Node.isPrintTextStatement(node) &&
-            isWhitespaceOnly(node.value.value)) ||
+        (Node.isPrintTextStatement(node) && isWhitespaceOnly(node.value.value)) ||
         (Node.isStringLiteral(node) && isWhitespaceOnly(node.value))
     );
 };
 
-const isEmptySequence = node =>
-    Node.isSequenceExpression(node) && node.expressions.length === 0;
+const isEmptySequence = (node) => Node.isSequenceExpression(node) && node.expressions.length === 0;
 
-const removeSurroundingWhitespace = children => {
+const removeSurroundingWhitespace = (children) => {
     if (!Array.isArray(children)) {
         return children;
     }
@@ -364,7 +328,7 @@ const removeSurroundingWhitespace = children => {
 
 const getDeepProperty = (obj, ...properties) => {
     let result = obj;
-    properties.forEach(p => {
+    properties.forEach((p) => {
         result = result[p];
     });
     return result;
@@ -381,24 +345,20 @@ const setDeepProperty = (obj, value, ...properties) => {
 
 const printChildBlock = (node, path, print, ...childPath) => {
     const originalChildren = getDeepProperty(node, ...childPath);
-    setDeepProperty(
-        node,
-        removeSurroundingWhitespace(originalChildren),
-        ...childPath
-    );
+    setDeepProperty(node, removeSurroundingWhitespace(originalChildren), ...childPath);
     const childGroups = printChildGroups(node, path, print, ...childPath);
     return indent(group(concat([hardline, ...childGroups])));
 };
 
-const addNewlineIfNotEmpty = items => {
+const addNewlineIfNotEmpty = (items) => {
     if (items.length > 0) {
         items.push(hardline);
     }
 };
 
-const endsWithHtmlComment = s => s.endsWith("-->");
+const endsWithHtmlComment = (s) => s.endsWith("-->");
 
-const stripCommentChars = (start, end) => s => {
+const stripCommentChars = (start, end) => (s) => {
     let result = s;
     if (result.startsWith(start)) {
         result = result.slice(start.length);
@@ -411,7 +371,7 @@ const stripCommentChars = (start, end) => s => {
 
 const stripHtmlCommentChars = stripCommentChars("<!--", "-->");
 
-const stripTwigCommentChars = s => {
+const stripTwigCommentChars = (s) => {
     let result = s;
     if (result.startsWith("{#")) {
         result = result.slice(2);
@@ -428,7 +388,7 @@ const stripTwigCommentChars = s => {
     return result;
 };
 
-const normalizeHtmlComment = s => {
+const normalizeHtmlComment = (s) => {
     const commentText = stripHtmlCommentChars(s);
     return "<!-- " + unifyWhitespace(commentText) + " -->";
 };
@@ -440,7 +400,7 @@ const normalizeTwigComment = (s, trimLeft, trimRight) => {
     return open + " " + unifyWhitespace(commentText) + " " + close;
 };
 
-const isHtmlCommentEqualTo = substr => node => {
+const isHtmlCommentEqualTo = (substr) => (node) => {
     return (
         node.constructor.name === "HtmlComment" &&
         node.value.value &&
@@ -448,7 +408,7 @@ const isHtmlCommentEqualTo = substr => node => {
     );
 };
 
-const isTwigCommentEqualTo = substr => node => {
+const isTwigCommentEqualTo = (substr) => (node) => {
     return (
         node.constructor.name === "TwigComment" &&
         node.value.value &&
@@ -456,34 +416,27 @@ const isTwigCommentEqualTo = substr => node => {
     );
 };
 
-const isInlineTextStatement = node => {
+const isInlineTextStatement = (node) => {
     if (!Node.isPrintTextStatement(node)) {
         return false;
     }
     // If the statement ends with an HTML comment
-    const trimmedValue =
-        typeof node.value.value === "string" && node.value.value.trim();
+    const trimmedValue = typeof node.value.value === "string" && node.value.value.trim();
     return !endsWithHtmlComment(trimmedValue);
 };
 
-const isInlineElement = node => {
-    const isInlineHtmlElement =
-        Node.isElement(node) && INLINE_HTML_ELEMENTS.indexOf(node.name) >= 0;
+const isInlineElement = (node) => {
+    const isInlineHtmlElement = Node.isElement(node) && INLINE_HTML_ELEMENTS.indexOf(node.name) >= 0;
 
-    return (
-        isInlineHtmlElement ||
-        Node.isPrintExpressionStatement(node) ||
-        isInlineTextStatement(node)
-    );
+    return isInlineHtmlElement || Node.isPrintExpressionStatement(node) || isInlineTextStatement(node);
 };
 
-const isCommentNode = node =>
-    Node.isTwigComment(node) || Node.isHtmlComment(node);
+const isCommentNode = (node) => Node.isTwigComment(node) || Node.isHtmlComment(node);
 
-const createInlineMap = nodes => nodes.map(node => isInlineElement(node));
+const createInlineMap = (nodes) => nodes.map((node) => isInlineElement(node));
 
-const textStatementsOnlyNewlines = nodes => {
-    nodes.forEach(node => {
+const textStatementsOnlyNewlines = (nodes) => {
+    nodes.forEach((node) => {
         if (Node.isPrintTextStatement(node)) {
             node[NEWLINES_ONLY] = true;
         }
@@ -492,17 +445,14 @@ const textStatementsOnlyNewlines = nodes => {
 
 const addPreserveWhitespaceInfo = (inlineMap, nodes) => {
     nodes.forEach((node, index) => {
-        const previousNodeIsComment =
-            index > 0 && isCommentNode(nodes[index - 1]);
-        const followingNodeIsComment =
-            index < nodes.length - 1 && isCommentNode(nodes[index + 1]);
+        const previousNodeIsComment = index > 0 && isCommentNode(nodes[index - 1]);
+        const followingNodeIsComment = index < nodes.length - 1 && isCommentNode(nodes[index + 1]);
         if (Node.isPrintTextStatement(node)) {
             const hasPreviousInlineElement = index > 0 && inlineMap[index - 1];
             if (hasPreviousInlineElement || previousNodeIsComment) {
                 node[PRESERVE_LEADING_WHITESPACE] = true;
             }
-            const hasFollowingInlineElement =
-                index < inlineMap.length - 1 && inlineMap[index + 1];
+            const hasFollowingInlineElement = index < inlineMap.length - 1 && inlineMap[index + 1];
             if (hasFollowingInlineElement || followingNodeIsComment) {
                 node[PRESERVE_TRAILING_WHITESPACE] = true;
             }
@@ -510,7 +460,7 @@ const addPreserveWhitespaceInfo = (inlineMap, nodes) => {
     });
 };
 
-const indentWithHardline = contents => indent(concat([hardline, contents]));
+const indentWithHardline = (contents) => indent(concat([hardline, contents]));
 
 const printChildGroups = (node, path, print, ...childPath) => {
     // For the preprocessed children, get a map showing which elements can
@@ -588,5 +538,5 @@ module.exports = {
     isInlineElement,
     printChildBlock,
     printChildGroups,
-    indentWithHardline
+    indentWithHardline,
 };

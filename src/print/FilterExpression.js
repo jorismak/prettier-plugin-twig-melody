@@ -10,11 +10,10 @@ const {
     wrapInStringInterpolation,
     someParentNode,
     isMultipartExpression,
-    getDeepProperty
+    getDeepProperty,
 } = require("../util");
 
-const isInFilterBlock = path =>
-    someParentNode(path, node => node[FILTER_BLOCK] === true);
+const isInFilterBlock = (path) => someParentNode(path, (node) => node[FILTER_BLOCK] === true);
 
 const printArguments = (node, path, print, nodePath) => {
     const hasArguments = node.arguments && node.arguments.length > 0;
@@ -23,24 +22,12 @@ const printArguments = (node, path, print, nodePath) => {
     }
 
     const printedArguments = path.map(print, ...nodePath, "arguments");
-    if (
-        node.arguments.length === 1 &&
-        Node.isObjectExpression(node.arguments[0])
-    ) {
+    if (node.arguments.length === 1 && Node.isObjectExpression(node.arguments[0])) {
         // Optimization: Avoid additional indentation level
         return group(concat(["(", printedArguments[0], ")"]));
     }
 
-    return group(
-        concat([
-            "(",
-            indent(
-                concat([softline, join(concat([",", line]), printedArguments)])
-            ),
-            softline,
-            ")"
-        ])
-    );
+    return group(concat(["(", indent(concat([softline, join(concat([",", line]), printedArguments)])), softline, ")"]));
 };
 
 const printOneFilterExpression = (node, path, print, nodePath) => {
@@ -50,10 +37,7 @@ const printOneFilterExpression = (node, path, print, nodePath) => {
 };
 
 const joinFilters = (filterExpressions, space = "") => {
-    return join(
-        concat([space === "" ? softline : line, "|", space]),
-        filterExpressions
-    );
+    return join(concat([space === "" ? softline : line, "|", space]), filterExpressions);
 };
 
 const p = (node, path, print, options) => {
@@ -77,23 +61,14 @@ const p = (node, path, print, options) => {
     // can only be achieved by collecting them manually in the top-level
     // FilterExpression node.
     while (Node.isFilterExpression(currentNode.target)) {
-        filterExpressions.unshift(
-            printOneFilterExpression(
-                currentNode.target,
-                path,
-                print,
-                pathToFinalTarget
-            )
-        );
+        filterExpressions.unshift(printOneFilterExpression(currentNode.target, path, print, pathToFinalTarget));
         pathToFinalTarget.push("target"); // Go one level deeper
         currentNode = currentNode.target;
     }
 
     const finalTarget = path.call(print, ...pathToFinalTarget);
     const isFilterBlock = isInFilterBlock(path); // Special case of FilterBlockStatement
-    const targetNeedsParentheses = isMultipartExpression(
-        getDeepProperty(node, ...pathToFinalTarget)
-    );
+    const targetNeedsParentheses = isMultipartExpression(getDeepProperty(node, ...pathToFinalTarget));
     const parts = [];
     if (targetNeedsParentheses) {
         parts.push("(");
@@ -113,7 +88,7 @@ const p = (node, path, print, options) => {
         const indentedFilters = concat([
             spaceAroundPipe ? line : softline,
             `|${space}`,
-            joinFilters(filterExpressions, space)
+            joinFilters(filterExpressions, space),
         ]);
         parts.push(indent(indentedFilters));
     }
@@ -132,5 +107,5 @@ const p = (node, path, print, options) => {
 };
 
 module.exports = {
-    printFilterExpression: p
+    printFilterExpression: p,
 };

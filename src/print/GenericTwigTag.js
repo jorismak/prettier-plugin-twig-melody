@@ -1,12 +1,7 @@
 const prettier = require("prettier");
 const { concat, hardline } = prettier.doc.builders;
 const { Node } = require("melody-types");
-const {
-    STRING_NEEDS_QUOTES,
-    indentWithHardline,
-    printSingleTwigTag,
-    isEmptySequence
-} = require("../util");
+const { STRING_NEEDS_QUOTES, indentWithHardline, printSingleTwigTag, isEmptySequence } = require("../util");
 
 const p = (node, path, print) => {
     node[STRING_NEEDS_QUOTES] = true;
@@ -27,5 +22,5 @@ const p = (node, path, print) => {
 };
 
 module.exports = {
-    printGenericTwigTag: p
+    printGenericTwigTag: p,
 };

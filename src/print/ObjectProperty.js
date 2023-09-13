@@ -5,9 +5,7 @@ const { Node } = require("melody-types");
 
 const p = (node, path, print, options) => {
     node[STRING_NEEDS_QUOTES] =
-        !node.computed &&
-        Node.isStringLiteral(node.key) &&
-        !isValidIdentifierName(node.key.value);
+        !node.computed && Node.isStringLiteral(node.key) && !isValidIdentifierName(node.key.value);
     const shouldPrintKeyAsString = node.key.wasImplicitConcatenation;
     const needsParentheses = node.computed && !shouldPrintKeyAsString;
     const parts = [];
@@ -25,5 +23,5 @@ const p = (node, path, print, options) => {
 };
 
 module.exports = {
-    printObjectProperty: p
+    printObjectProperty: p,
 };

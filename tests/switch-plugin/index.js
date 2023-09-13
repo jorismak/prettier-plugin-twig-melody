@@ -1,11 +1,6 @@
 const prettier = require("prettier");
 const { concat, indent, hardline } = prettier.doc.builders;
-const {
-    STRING_NEEDS_QUOTES,
-    printSingleTwigTag,
-    indentWithHardline,
-    isEmptySequence
-} = require("../../src/util");
+const { STRING_NEEDS_QUOTES, printSingleTwigTag, indentWithHardline, isEmptySequence } = require("../../src/util");
 const { Node } = require("melody-types");
 
 const printSwitch = (node, path, print) => {
@@ -32,6 +27,6 @@ const printSwitch = (node, path, print) => {
 
 module.exports = {
     printers: {
-        switchTag: printSwitch
-    }
+        switchTag: printSwitch,
+    },
 };

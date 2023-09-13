@@ -2,18 +2,13 @@ const prettier = require("prettier");
 const { group, indent, line, hardline, concat } = prettier.doc.builders;
 const { EXPRESSION_NEEDED, printChildBlock } = require("../util");
 const { Node } = require("melody-types");
-const {
-    hasNoNewlines,
-    PRESERVE_LEADING_WHITESPACE,
-    PRESERVE_TRAILING_WHITESPACE
-} = require("../util");
+const { hasNoNewlines, PRESERVE_LEADING_WHITESPACE, PRESERVE_TRAILING_WHITESPACE } = require("../util");
 
 const IS_ELSEIF = Symbol("IS_ELSEIF");
 
 const p = (node, path, print) => {
     node[EXPRESSION_NEEDED] = false;
-    const hasElseBranch =
-        Array.isArray(node.alternate) && node.alternate.length > 0;
+    const hasElseBranch = Array.isArray(node.alternate) && node.alternate.length > 0;
     const hasElseIfBranch = Node.isIfStatement(node.alternate);
     const isElseIf = node[IS_ELSEIF] === true;
     const isEmptyIf = node.consequent.length === 0;
@@ -25,15 +20,10 @@ const p = (node, path, print) => {
         (isEmptyIf ||
             (hasOneChild &&
                 !Node.isElement(firstChild) &&
-                (!Node.isPrintTextStatement(firstChild) ||
-                    hasNoNewlines(firstChild.value.value))));
+                (!Node.isPrintTextStatement(firstChild) || hasNoNewlines(firstChild.value.value))));
 
     // Preserve no-newline white space in single text node child
-    if (
-        hasOneChild &&
-        Node.isPrintTextStatement(firstChild) &&
-        hasNoNewlines(firstChild.value.value)
-    ) {
+    if (hasOneChild && Node.isPrintTextStatement(firstChild) && hasNoNewlines(firstChild.value.value)) {
         firstChild[PRESERVE_LEADING_WHITESPACE] = true;
         firstChild[PRESERVE_TRAILING_WHITESPACE] = true;
     }
@@ -44,7 +34,7 @@ const p = (node, path, print) => {
             isElseIf ? "elseif" : "if",
             indent(concat([line, path.call(print, "test")])),
             " ",
-            node.trimRightIf ? "-%}" : "%}"
+            node.trimRightIf ? "-%}" : "%}",
         ])
     );
     const ifBody = printInline
@@ -54,12 +44,7 @@ const p = (node, path, print) => {
         : printChildBlock(node, path, print, "consequent");
     const parts = [ifClause, ifBody];
     if (hasElseBranch) {
-        parts.push(
-            hardline,
-            node.trimLeftElse ? "{%-" : "{%",
-            " else ",
-            node.trimRightElse ? "-%}" : "%}"
-        );
+        parts.push(hardline, node.trimLeftElse ? "{%-" : "{%", " else ", node.trimRightElse ? "-%}" : "%}");
         parts.push(printChildBlock(node, path, print, "alternate"));
     } else if (hasElseIfBranch) {
         node.alternate[IS_ELSEIF] = true;
@@ -79,5 +64,5 @@ const p = (node, path, print) => {
 };
 
 module.exports = {
-    printIfStatement: p
+    printIfStatement: p,
 };
